@@ -7,11 +7,17 @@ ContextMap {
 	contains PolicyManagementContext
 
 	PrintingContext [OHS, PL] -> [ACL] DebCollectionContext
+
 	PrintingContext [OHS, PL] -> [ACL] CustomerManagementContext
+
 	PrintingContext [OHS, PL] -> [ACL] PolicyManagementContext
+
 	CustomerManagementContext [S] -> [C] CustomerSelfServiceContext
+
 	DebCollectionContext Shared-Kernel PolicyManagementContext
+
 	CustomerManagementContext [OHS, PL] -> [CF] PolicyManagementContext
+
 	PolicyManagementContext Partnership RiskManagementContext
 }
 
@@ -25,4 +31,60 @@ BoundedContext DebCollectionContext
 
 BoundedContext RiskManagementContext
 
-BoundedContext PolicyManagementContext
+BoundedContext PolicyManagementContext implements PolicyManagementDomain {
+	Aggregate Offer {
+		Entity Offer {
+			aggregateRoot
+			- OfferId identifier
+			BigDecimal price
+			Customer client
+			- List<Product> products
+		}
+		ValueObject OfferId {
+			int offerId
+		}
+	}
+	Aggregate Product {
+		Entity Product {
+			aggregateRoot
+			String productName
+			- ProductId identifier
+		}
+		ValueObject ProductId {
+			int productId
+		}
+	}
+	Aggregate Contract {
+		Entity Contract {
+			- ContractId identifier
+			Customer client
+			- List<Product> products
+		}
+		Entity Policy {
+			int policyNr
+			BigDecimal price
+			- Contract contract
+		}
+		ValueObject ContractId {
+			int contractId
+		}
+		enum States {
+			aggregateLifecycle
+			CREATED, POLICE_CREATED, RECALLED
+		}
+		Service ContractService {
+			@ContractId createContract(@Contract contrace) : write;
+			@Contract getContract(@ContractId contractId) : read-only;
+			boolean createPolicy(@ContractId contractId) : write;
+			boolean recall(@ContractId contractId) : write;
+		}
+	}
+}
+
+Domain Insurance {
+	Subdomain PolicyManagementDomain {
+		type = CORE_DOMAIN
+	}
+
+}
+
