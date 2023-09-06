@@ -1,0 +1,28 @@
+ContextMap {
+	contains CustomerSelfServiceContext
+	contains CustomerManagementContext
+	contains PrintingContext
+	contains DebCollectionContext
+	contains RiskManagementContext
+	contains PolicyManagementContext
+
+	PrintingContext [OHS, PL] -> [ACL] DebCollectionContext
+	PrintingContext [OHS, PL] -> [ACL] CustomerManagementContext
+	PrintingContext [OHS, PL] -> [ACL] PolicyManagementContext
+	CustomerManagementContext [S] -> [C] CustomerSelfServiceContext
+	DebCollectionContext Shared-Kernel PolicyManagementContext
+	CustomerManagementContext [OHS, PL] -> [CF] PolicyManagementContext
+	PolicyManagementContext Partnership RiskManagementContext
+}
+
+BoundedContext CustomerSelfServiceContext
+
+BoundedContext CustomerManagementContext
+
+BoundedContext PrintingContext
+
+BoundedContext DebCollectionContext
+
+BoundedContext RiskManagementContext
+
+BoundedContext PolicyManagementContext
